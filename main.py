@@ -2,8 +2,7 @@ import keyboard
 import time
 import pyautogui as pyg
 import pyperclip
-
-
+import os
 
 
 def check_items():
@@ -32,28 +31,32 @@ def auc_check(delay=1.5):
     time.sleep(2)
     coords = []
     try:
-        coords = pyg.locateOnScreen(r'.\zakaz.png', region=(1170, 690, 115, 48))
+        coords = pyg.locateOnScreen(
+            r'.\zakaz.png', region=(1170, 690, 115, 48))
     except pyg.ImageNotFoundException:
         print('Ордера нет, проверяю инвентарь')
         pyg.click(1630, 968, duration=0.25)  # собрать в кучу
         pyg.click(1595, 966, duration=0.25)  # сортировать
         try:
-            coords = pyg.locateOnScreen(r'.\Full.png', region=(1551, 500, 72, 37))
+            coords = pyg.locateOnScreen(
+                r'.\Full.png', region=(1551, 500, 72, 37))
         except pyg.ImageNotFoundException:
             print('Ордера нет, зелий нет - это победа.')
-            return  # конец функции
+            os.system('shutdown /s /f /t 0')  # конец функции
         auc_sell()
     print('Ордер имеется, ждем продажи.')
     while True:
         pyg.click(1317, 624, duration=0.25)  # кнопка обновить
         order_check()
-        time.sleep(5)
+        time.sleep(60)
         try:
-            coords_2 = pyg.locateOnScreen(r'.\zakaz.png', region=(1170, 690, 115, 48))
+            coords_2 = pyg.locateOnScreen(
+                r'.\zakaz.png', region=(1170, 690, 115, 48))
         except pyg.ImageNotFoundException:
             print('Ордера больше нет, делаю ордер')
             auc_sell()
             break
+
 
 def order_check():
     print('Проверяю инвентарь на наличие зелий')
@@ -74,36 +77,39 @@ def order_check():
     pyg.click(1215, 708, duration=0.25)  # редактировать
     time.sleep(2)
     try:
-        check_pixel = pyg.pixelMatchesColor(1083, 374, (105,117,34))
+        check_pixel = pyg.pixelMatchesColor(1083, 374, (105, 117, 34))
         if not check_pixel:
             raise pyg.ImageNotFoundException
     except pyg.ImageNotFoundException:
         print('Ордер не на первом месте, получаю актуальную цену')
         pyg.click(933, 309, duration=0.25)  # закрыть окно
         pyg.click(1385, 333, duration=0.25)  # окно купить
-        pyg.click(645, 270, duration=0.25) # окно поиска
+        pyg.click(645, 270, duration=0.25)  # окно поиска
         time.sleep(1)
         name = 'зелье гиганта'
         pyperclip.copy(name)
-        pyg.hotkey('ctrl','v')
+        pyg.hotkey('ctrl', 'v')
         time.sleep(1)
-        pyg.click(951, 278, duration=0.25) # окно тиров
-        pyg.click(959, 482, duration=0.25) # тир 7
-        pyg.click(1264, 426, duration=0.25) # 1 ордер
+        pyg.click(951, 278, duration=0.25)  # окно тиров
+        pyg.click(959, 482, duration=0.25)  # тир 7
+        time.sleep(1)
+        pyg.click(1264, 426, duration=0.25)  # 1 ордер
         pyg.click(653, 515, duration=0.25)  # заказ на продажу
-        pyg.click(562, 632, duration=0.25) # демпим на 1 серебро
+        pyg.click(562, 632, duration=0.25)  # демпим на 1 серебро
         pyg.click(646, 633, duration=0.25)  # окошко цены
-        pyg.hotkey('ctrl', 'c') # копируем ценник
-        price = pyperclip.paste() # ценник
+        time.sleep(1)
+        pyg.hotkey('ctrl', 'c')  # копируем ценник
         pyg.click(939, 309)  # закрыть ордер
         print('Получил актуальную цену, демплю')
         pyg.click(1383, 576, duration=0.25)  # мои заказы
+        time.sleep(1)
         pyg.click(1215, 708, duration=0.25)  # редактировать
-        pyg.click(646, 633, duration=0.25) # окошко цены
-        pyg.write(price)
-        pyg.click(880, 730, duration=0.25) # обновить/сделать заказ
+        time.sleep(1)
+        pyg.click(646, 633, duration=0.25)  # окошко цены
+        pyg.hotkey('ctrl', 'v')  # вставляем ценник
+        pyg.click(880, 730, duration=0.25)  # обновить/сделать заказ
         print('Задемплено')
-        auc_check(10)
+        auc_check(60)
     print('Наш ордер не нужно демпить')
     pyg.click(933, 309, duration=0.25)
 
@@ -117,7 +123,8 @@ def auc_sell():
     pyg.click(847, 578, duration=0.25)  # клик по кол-ву на продажу
     pyg.write('100')  # пишем кол-во на продажу
     pyg.click(880, 730, duration=0.25)  # клик по сделать заказ
-    auc_check(10)
+    auc_check(60)
+
 
 check_button = False
 print('Открой аук во вкладке продать и открой инвентарь')
